@@ -82,13 +82,47 @@ async function fetch7Movies(link){
     return movies;
 }
 
-function turn_carousel (moviesAndMovies_to_show){
-    document.getElementById("left_group_best").addEventListener("click", console.log(this.id)); // Retourne l'erreur
+function turn_carousel (data){
+    let carouselId = data[2];
+    let allMovies = data[0];
+    let indexMovies = data[3];
+    let leftArrows = document.getElementsByClassName("left_arrows");
+    let rightArrows = document.getElementsByClassName("right_arrows");
+    let arrows = [];
+    arrows = Array.prototype.concat.apply(arrows, leftArrows);
+    arrows = Array.prototype.concat.apply(arrows, rightArrows);
+    for (let arrow of arrows){
+        arrow.addEventListener("click", function(){
+            let i = 0;
+            while (i < 4){
+                if (arrow.classList.contains("left_arrows")){
+                    indexMovies[i] -= 1;
+                    if (indexMovies[i] < 0){
+                        indexMovies[i] = 6;
+                    }
+                    i++;
+                } else if (arrow.classList.contains("right_arrows")) {
+                    indexMovies[i] += 1;
+                    if (indexMovies[i] > 6){
+                        indexMovies[i] = 0;
+                    }
+                    i++;
+                } else {
+                    console.log("erreur");
+                }
+            }
+            movies_to_show = [allMovies[indexMovies[0]], allMovies[indexMovies[1]], allMovies[indexMovies[2]], allMovies[indexMovies[3]]];
+            let carouselContainer = document.getElementById(carouselId);
+            show_movies(carouselContainer, movies_to_show, carouselId);
+            newData = [allMovies, movies_to_show, carouselId, indexMovies]
+            turn_carousel(newData);
+        });
+    }
 }
 
 function show_movies (carouselContainer, movies_to_show, id) {
     let content = `
-    <button style="background: url('icons/left_arrow.png')" class="arrow" id="left_${id}"></button>
+    <button style="background: url('icons/left_arrow.png')" class="left_arrows" id="left_${id}"></button>
     <div class="carousel_images">
     `;
     for (let movie of movies_to_show) {
@@ -101,7 +135,7 @@ function show_movies (carouselContainer, movies_to_show, id) {
     }
     content += `
         </div>
-        <button style="background: url('icons/right_arrow.png')" class="arrow" id="left_${id}"></button>
+        <button style="background: url('icons/right_arrow.png')" class="right_arrows" id="left_${id}"></button>
     `;
     carouselContainer.innerHTML = "";
     carouselContainer.innerHTML += content;
@@ -120,44 +154,49 @@ async function display_carousel(infos) {
 
             let carouselContainer = document.getElementById(infos[1]);
             show_movies(carouselContainer, movies_to_show, infos[1]);
+            return [movies, movies_to_show, infos[1], [0, 1, 2, 3]]
         })
-    return [movies, movies_to_show];
+        .then(data => {
+            turn_carousel(data)
+        })
 }
 
 for (infos of moviesInfos){ // J'itère mes carousels
     display_carousel(infos) // Une fonction asynchrone qui ecrit le html
-        .then(data => console.log(document.getElementById("left_group_best"))); // Une fonction normale qui retourne l'erreur en question
 }
 
 fetch(linkBestMovie)
     .then(response => response.json())
     .then(response => {
-        let data = response.results;
-        let linkAllData = data[0].url;
+        let dataFilm = response.results[0];
+        // let linkAllData = data[0].url;
+        let contentImg = `<img src="${dataFilm.image_url}" class="best_movie" id="best_movie_img">`;
+        let divBestMovieImg = document.getElementById("best_movie_img_container")
+        divBestMovieImg.innerHTML = contentImg;
 
-        fetch(linkAllData)
-            .then(response => response.json())
-            .then(response => {
-                let dataBestMovie = response;
-                var divBestMovieInfos = document.getElementById("best_movie_infos");
-                var divBestMovieImg = document.getElementById("best_movie_img")
+        // fetch(linkAllData)
+        //     .then(response => response.json())
+        //     .then(response => {
+        //         let dataBestMovie = response;
+        //         var divBestMovieInfos = document.getElementById("best_movie_infos");
+        //         var divBestMovieImg = document.getElementById("best_movie_img")
 
-                let contentImg = `<img src="${dataBestMovie.image_url}" id="best_movie_img">`;
-                let contentInfos = `
-                <h3>${dataBestMovie.title}</h3>
-                <h4>Genres : ${dataBestMovie.genres}</h4>
-                <h4>Année de sortie : ${dataBestMovie.year}</h4>
-                <h4>Score du publique : ${dataBestMovie.votes}</h4>
-                <h4>Score imdb : ${dataBestMovie.imdb_score}</h4>
-                <h4>Réalisateur : ${dataBestMovie.directors}</h4>
-                <h4>Acteurs : ${dataBestMovie.actors}</h4>
-                <h4>Durée : ${dataBestMovie.duration}min</h4>
-                <h4>Pays d'origine : ${dataBestMovie.countries}</h4>
-                <h4>Box office : ${dataBestMovie.usa_gross_income}$</h4>
-                <h4>Résumé : ${dataBestMovie.description}</h4>
-                `
-                divBestMovieImg.innerHTML = contentImg;
-                divBestMovieInfos.innerHTML = contentInfos;
-            })
+        //         let contentImg = `<img src="${dataBestMovie.image_url}" id="best_movie_img">`;
+        //         let contentInfos = `
+        //         <h3>${dataBestMovie.title}</h3>
+        //         <h4>Genres : ${dataBestMovie.genres}</h4>
+        //         <h4>Année de sortie : ${dataBestMovie.year}</h4>
+        //         <h4>Score du publique : ${dataBestMovie.votes}</h4>
+        //         <h4>Score imdb : ${dataBestMovie.imdb_score}</h4>
+        //         <h4>Réalisateur : ${dataBestMovie.directors}</h4>
+        //         <h4>Acteurs : ${dataBestMovie.actors}</h4>
+        //         <h4>Durée : ${dataBestMovie.duration}min</h4>
+        //         <h4>Pays d'origine : ${dataBestMovie.countries}</h4>
+        //         <h4>Box office : ${dataBestMovie.usa_gross_income}$</h4>
+        //         <h4>Résumé : ${dataBestMovie.description}</h4>
+        //         `
+        //         divBestMovieImg.innerHTML = contentImg;
+        //         divBestMovieInfos.innerHTML = contentInfos;
+        //     })
     })
 
