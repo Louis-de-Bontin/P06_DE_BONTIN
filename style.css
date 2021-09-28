@@ -2,51 +2,56 @@
     box-sizing: border-box;
 }
 body{
-    background-color: black;
-    color: white;
+    background-image: url("icons/wallpaper.png");
+    background-attachment: fixed;
+}
+#black_background{
+    background-color: rgba(0,0,0,0.4);
+    margin-left: 15%;
+    margin-right: 15%;
+    opacity: 0,5;
 }
 header{
     display: flex;
     flex-wrap: wrap;
     height: 2%;
 }
+#just_strem_it{
+    margin-top: 10px;
+}
 h1, h2, h5{
-    color: #9cd9c9;
-}
-/* #best_movie_img_container{
-    width: 200px;
-    height: 150px;
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-    margin: 0;
-  }
-#best_movie_img{
-    display: block;
-    position: absolute;
-    top: 100%;
-    left: 100%;
-    min-height: 100%;
-    min-width: 100%;
-    transform: translate(-50%, -50%);
-  } */
-ul{
-    display: flex;
-    flex-wrap: wrap;
-    list-style: none;
-}
-.title{
-    font-family: 'Architects Daughter', cursive;
+    color: #990101;
+    font-family: 'Roboto', sans-serif;
     text-align: center;
     width: 100%;
 }
-#best_movie_img{
-    width:100%;
-    height:auto;
+p{
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+#best_movie_img_container{
+    width: 50%;
+    height: 300px;
+    position: relative;
+    align-items: flex-end;
+  }
+.best_movie_img{
+    max-width: 100%;
+    height: auto;
+    float: right;
+    transition: transform .2s;
+    margin: 0 auto;
+    cursor: pointer;
+    padding-right: 10px;
+  }
+#best_movie_infos{
+    padding-left: 10px;
+    width: 50%;
+    padding-right: 5%;
 }
 button{
     background-repeat: center, no-repeat;
-    width: 3%;
+    width: 4%;
     height: 50px;
     border: none;
     transition: transform .2s;
@@ -59,12 +64,6 @@ button:hover{
     display: flex;
     flex-wrap: wrap;
 }
-#best_movie_img{
-    width: 40%;
-}
-#best_movie_infos{
-    width: 45%;
-}
 .carousel{
     display: flex;
     align-items: center;
@@ -74,21 +73,26 @@ button:hover{
 .carousel_images{
     display: flex;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
 }
 .carousel_square{
-    width: 35%;
+    width: 24%;
 }
 .movie_cover{
     transition: transform .2s;
     width: 90%;
-    margin: 0 auto;
+    margin-left: 10%;
+    margin-right: 10%;
     cursor: pointer;
 }
-.movie_cover:hover{
+.movie_cover:hover,
+.best_movie_img:hover{
     transform: scale(1.2);
 }
-
+.left_arrows,
+.right_arrows{
+    margin: 3px;
+}
 #modal{
     display: none;
     position: fixed;
