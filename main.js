@@ -82,86 +82,49 @@ async function fetch7Movies(link){
     return movies;
 }
 
-function turn_carousel (data){
-    let carouselId = data[2];
-    let allMovies = data[0];
-    let indexMovies = data[3];
-    let leftArrows = document.getElementsByClassName("left_arrows");
-    let rightArrows = document.getElementsByClassName("right_arrows");
-    // for (let leftArrow of leftArrows){
-    //     console.log(leftArrows.length);
-    //     leftArrow.addEventListener("click", function(){
-    //         let i = 0;
-    //         while (i < 4){
-    //             indexMovies[i]--;
-    //             if (indexMovies[i] < 0){
-    //                 indexMovies[i] = 6;
-    //             }
-    //             i++;
-    //         }
+function turnCarousel(newIndex, sevenMovies, carouselId){
+    let moviesToShow = [
+        sevenMovies[newIndex[0]],
+        sevenMovies[newIndex[1]],
+        sevenMovies[newIndex[2]],
+        sevenMovies[newIndex[3]],
+    ]
+    let carouselContainer = document.getElementById(carouselId);
+    show_movies(carouselContainer, moviesToShow, carouselId)
+}
 
-    //     })
-    //     movies_to_show = [allMovies[indexMovies[0]], allMovies[indexMovies[1]], allMovies[indexMovies[2]], allMovies[indexMovies[3]]];
-    //     let carouselContainer = document.getElementById(carouselId);
-    //     show_movies(carouselContainer, movies_to_show, carouselId);
-    //     newData = [allMovies, movies_to_show, carouselId, indexMovies]
-    //     turn_carousel(newData);
-    // }
-    // for (let rightArrow of rightArrows){
-    //     rightArrow.addEventListener("click", function(){
-    //         let i = 0;
-    //         while (i < 4){
-    //             indexMovies[i] += 1;
-    //             if (indexMovies[i] > 6){
-    //                 indexMovies[i] = 0;
-    //             i++;
-    //             }
-    //         }
-    //         console.log(indexMovies);
-    //     })
-    // }
-    // movies_to_show = [allMovies[indexMovies[0]], allMovies[indexMovies[1]], allMovies[indexMovies[2]], allMovies[indexMovies[3]]];
-    // let carouselContainer = document.getElementById(carouselId);
-    // show_movies(carouselContainer, movies_to_show, carouselId);
-    // newData = [allMovies, movies_to_show, carouselId, indexMovies]
-    // turn_carousel(newData);
-// }
-    let arrows = [];
-    arrows = Array.prototype.concat.apply(arrows, leftArrows);
-    arrows = Array.prototype.concat.apply(arrows, rightArrows);
-    for (let arrow of arrows){
-        arrow.addEventListener("click", function(){
-            let arrowId = this.id;
-            if (arrowId.includes("left")){
-                console.log("salut")
-            } else if (arrowId.includes("right")) {
-                console.log("bonjour");
+function carouselTurnLeft(leftArrowId, sevenMovies, carouselId){
+    let newIndex = [0, 1, 2, 3];
+    let clickableLeftArrow = document.getElementById(leftArrowId);
+    clickableLeftArrow.addEventListener("click", function(){
+        console.log("turning left : " + leftArrowId);
+        let i = 0;
+        while (i<4){
+            newIndex[i] -= 1;
+            if (newIndex[i] < 0){
+                newIndex[i] = 6;
             }
-            // let i = 0;
-            // while (i < 4){
-            //     if (arrow.classList.contains("left_arrows")){
-            //         indexMovies[i] -= 1;
-            //         if (indexMovies[i] < 0){
-            //             indexMovies[i] = 6;
-            //         }
-            //         i++;
-            //     } else if (arrow.classList.contains("right_arrows")) {
-            //         indexMovies[i] += 1;
-            //         if (indexMovies[i] > 6){
-            //             indexMovies[i] = 0;
-            //         }
-            //         i++;
-            //     } else {
-            //         console.log("erreur");
-            //     }
-            // }
-            // movies_to_show = [allMovies[indexMovies[0]], allMovies[indexMovies[1]], allMovies[indexMovies[2]], allMovies[indexMovies[3]]];
-            // let carouselContainer = document.getElementById(carouselId);
-            // show_movies(carouselContainer, movies_to_show, carouselId);
-            // newData = [allMovies, movies_to_show, carouselId, indexMovies]
-            // turn_carousel(newData);
-        });
-    }
+            i++;
+        }
+        // turnCarousel(newIndex, sevenMovies, carouselId);
+    })
+}
+
+function carouselTurnRight(rightArrow, sevenMovies, carouselId){
+    let newIndex = [0, 1, 2, 3];
+    let clickableRightArrow = document.getElementById(rightArrow);
+    clickableRightArrow.addEventListener("click", function(){
+        console.log("turning right : " + rightArrow);
+        let i = 0;
+        while(i<4){
+            newIndex[i] += 1;
+            if (newIndex[i] > 6){
+                newIndex[i] = 0;
+            }
+            i++;
+        }
+        // turnCarousel(newIndex, sevenMovies, carouselId);
+    })
 }
 
 function show_movies (carouselContainer, movies_to_show, id) {
@@ -201,12 +164,16 @@ async function display_carousel(infos) {
             return [movies, movies_to_show, infos[1], [0, 1, 2, 3]]
         })
         .then(data => {
-            turn_carousel(data);
+            let carouselId = data[2];
+            let leftArrow = "left_" + data[2];
+            let rightArrow = "right_" + data[2];
+            carouselTurnLeft(leftArrow, movies, carouselId);
+            carouselTurnRight(rightArrow, movies, carouselId);
         })
 }
 
 for (infos of moviesInfos){ // J'itère mes carousels
-    display_carousel(infos) // Une fonction asynchrone qui ecrit le html
+    display_carousel(infos); // Une fonction asynchrone qui ecrit le html
 }
 
 fetch(linkBestMovie)
