@@ -12,6 +12,9 @@ let bestScifiInfo = [linkBestScifi, "group_scifi"];
 
 let moviesInfos = [bestMoviesInfo, bestThrillerInfo, bestHistoryInfo, bestScifiInfo];
 
+// Fonction qui prend en paramètre l'ID du film sur lequel l'utilisateur a cliqué.
+// Elle fait un requette au serveur et puis affiche les information nécessaires dans
+// une modale.
 async function modalMaker(clickedId){
     await fetch("http://localhost:8000/api/v1/titles/" + clickedId)
         .then(response => response.json())
@@ -42,9 +45,28 @@ async function modalMaker(clickedId){
             }
             window.onclick = function(event){
                 if (event.target == modal) {
-                    modal.style.display = "none";
+                    modal.display = "none";
                 }
             }
+        })
+}
+
+// Cette fonction crée la portion réservée au meilleur film
+async function fetch_best_movie(linkBestMovie){
+    fetch(linkBestMovie)
+        .then(response => response.json())
+        .then(response => {
+            let dataFilm = response.results[0];
+            let contentImg = `<img src="${dataFilm.image_url}" onClick="modalMaker(this.id)" class="best_movie_img" id="${dataFilm.id}">`;
+            let divBestMovieImg = document.getElementById("best_movie_img_container")
+            let divBestMovieInfos = document.getElementById("best_movie_infos");
+            let contentInfos = `
+                <p id="title">${dataFilm.title}</p>
+                <p>De : <br>${dataFilm.directors}</p>
+                <p>Avec : <br>${dataFilm.actors}</p>
+            `;
+            divBestMovieImg.innerHTML = contentImg;
+            divBestMovieInfos.innerHTML = contentInfos;
         })
 }
 
@@ -82,56 +104,23 @@ async function fetch7Movies(link){
     return movies;
 }
 
-function turnCarousel(newIndex, sevenMovies, carouselId){
-    let moviesToShow = [
-        sevenMovies[newIndex[0]],
-        sevenMovies[newIndex[1]],
-        sevenMovies[newIndex[2]],
-        sevenMovies[newIndex[3]],
-    ]
-    let carouselContainer = document.getElementById(carouselId);
-    show_movies(carouselContainer, moviesToShow, carouselId)
-}
-
-function carouselTurnLeft(leftArrowId, sevenMovies, carouselId){
-    let newIndex = [0, 1, 2, 3];
-    let clickableLeftArrow = document.getElementById(leftArrowId);
-    clickableLeftArrow.addEventListener("click", function(){
-        console.log("turning left : " + leftArrowId);
-        let i = 0;
-        while (i<4){
-            newIndex[i] -= 1;
-            if (newIndex[i] < 0){
-                newIndex[i] = 6;
-            }
-            i++;
-        }
-        // turnCarousel(newIndex, sevenMovies, carouselId);
-    })
-}
-
-function carouselTurnRight(rightArrow, sevenMovies, carouselId){
-    let newIndex = [0, 1, 2, 3];
-    let clickableRightArrow = document.getElementById(rightArrow);
-    clickableRightArrow.addEventListener("click", function(){
-        console.log("turning right : " + rightArrow);
-        let i = 0;
-        while(i<4){
-            newIndex[i] += 1;
-            if (newIndex[i] > 6){
-                newIndex[i] = 0;
-            }
-            i++;
-        }
-        // turnCarousel(newIndex, sevenMovies, carouselId);
-    })
-}
-
-function show_movies (carouselContainer, movies_to_show, id) {
+// Cette fonction écrit les flèches ainsi qu'une div qui accueillera les films
+function write_arrows (carouselContainer, id){
+    let div_id = "film_container_" + id;
     let content = `
-    <button style="background: url('icons/left_arrow.png'); background-repeat: no-repeat;" class="left_arrows" id="left_${id}"></button>
-    <div class="carousel_images">
-    `;
+    <button class="left_arrows" id="left_${id}"></button>
+    <div class="carousel_images" id="${div_id}"></div>
+    <button class="right_arrows" id="right_${id}"></button>
+    `
+    carouselContainer.innerHTML = content;
+    return div_id;
+}
+
+// Cette fonction insère les films dans la div créée dans la fonction write_arrows
+// Elle prend en paramètre les films à montrer ainsi que la div qui va les acueillir
+function show_movies (moviesContainerid, movies_to_show) {
+    let content = ``;
+    let moviesContainer = document.getElementById(moviesContainerid);
     for (let movie of movies_to_show) {
         content += `
         <div class="carousel_square" onClick="modalMaker(this.id)" id="${movie.id}">
@@ -140,15 +129,67 @@ function show_movies (carouselContainer, movies_to_show, id) {
         </div>
         `;
     }
-    content += `
-        </div>
-        <button style="background: url('icons/right_arrow.png'); background-repeat: no-repeat;" class="right_arrows" id="right_${id}"></button>
-    `;
-    carouselContainer.innerHTML = "";
-    carouselContainer.innerHTML += content;
+    moviesContainer.innerHTML = "";
+    moviesContainer.innerHTML += content;
 }
 
-// J'itère mon objet Map pour avoir accès aux liens et aux id
+// Cette fonction modifie les films à afficher grâce à de nouveaux index calculés soit dans la
+// fonction carouselTurnLeft soit dans la fonction carouselTurnRight. Puis appel la fonction
+// show_movies
+function turnCarousel(newIndex, sevenMovies, carouselId){
+    let moviesToShow = [
+        sevenMovies[newIndex[0]],
+        sevenMovies[newIndex[1]],
+        sevenMovies[newIndex[2]],
+        sevenMovies[newIndex[3]],
+    ]
+    let moviesContainerId = "film_container_" + carouselId;
+    show_movies(moviesContainerId, moviesToShow)
+}
+
+// Calcule de nouveaux index qui correspondes aux index des films à montrer au sein de l'array
+// de 7 films. Cette fonction crée l'évennement du carousel lors du clique sur la flèche de gauche
+// turnCarousel est ensuite appelée avec les nouveaux index, l'array avec tous les films, et l'id
+// du carousel sur lequelle elle travaille.
+function carouselTurnLeft(leftArrowId, sevenMovies, carouselId){
+    let newIndex = [0, 1, 2, 3];
+    let clickableLeftArrow = document.getElementById(leftArrowId);
+    clickableLeftArrow.addEventListener("click", function(){
+        let i = 0;
+        while (i<4){
+            newIndex[i] -= 1;
+            if (newIndex[i] < 0){
+                newIndex[i] = 6;
+            }
+            i++;
+        }
+        turnCarousel(newIndex, sevenMovies, carouselId);
+    })
+}
+
+// Calcule de nouveaux index qui correspondes aux index des films à montrer au sein de l'array
+// de 7 films. Cette fonction crée l'évennement du carousel lors du clique sur la flèche de droite
+// turnCarousel est ensuite appelée avec les nouveaux index, l'array avec tous les films, et l'id
+// du carousel sur lequelle elle travaille.
+function carouselTurnRight(rightArrow, sevenMovies, carouselId){
+    let newIndex = [0, 1, 2, 3];
+    let clickableRightArrow = document.getElementById(rightArrow);
+    clickableRightArrow.addEventListener("click", function(){
+        let i = 0;
+        while(i<4){
+            newIndex[i] += 1;
+            if (newIndex[i] > 6){
+                newIndex[i] = 0;
+            }
+            i++;
+        }
+        turnCarousel(newIndex, sevenMovies, carouselId);
+    })
+}
+
+// Cette fonction est le coeur du programe, elle appel la fonction fetch7movies, afin de récupérer
+// les données nécessaires à la création d'un carouseil, puis appel la fonction show_movies afin
+// d'afficher le carousel de base, avec les 4 premiers films.
 async function display_carousel(infos) {
     let movies = [];
     let movies_to_show = [];
@@ -157,12 +198,19 @@ async function display_carousel(infos) {
         // Après avoir récupéré mes 7 films :
         .then(new_movies => {
             movies = new_movies;
+            // Les 4 premiers films sont séléctionnés comme étant à montrer
             movies_to_show = [movies[0], movies[1], movies[2], movies[3]];
 
             let carouselContainer = document.getElementById(infos[1]);
-            show_movies(carouselContainer, movies_to_show, infos[1]);
+            // La fonction write_arrows écris les flêches et renvoi la dic accueillant les films
+            let moviesContainerId = write_arrows(carouselContainer, infos[1]);
+            show_movies(moviesContainerId, movies_to_show);
+            // Le 4eme élément retourné est la liste d'index correspondant aux films à montrer
+            // dans la liste de tous les films
             return [movies, movies_to_show, infos[1], [0, 1, 2, 3]]
         })
+        // Après avoir affiché les films et les flèches, on crée les évènements qui déclanchent le
+        // carousel
         .then(data => {
             let carouselId = data[2];
             let leftArrow = "left_" + data[2];
@@ -172,23 +220,7 @@ async function display_carousel(infos) {
         })
 }
 
+fetch_best_movie(linkBestMovie); // Je crée l'affiche pour le meilleur film
 for (infos of moviesInfos){ // J'itère mes carousels
     display_carousel(infos); // Une fonction asynchrone qui ecrit le html
 }
-
-fetch(linkBestMovie)
-    .then(response => response.json())
-    .then(response => {
-        let dataFilm = response.results[0];
-        // let linkAllData = data[0].url;
-        let contentImg = `<img src="${dataFilm.image_url}" onClick="modalMaker(this.id)" class="best_movie_img" id="${dataFilm.id}">`;
-        let divBestMovieImg = document.getElementById("best_movie_img_container")
-        let divBestMovieInfos = document.getElementById("best_movie_infos");
-        let contentInfos = `
-            <p id="title">${dataFilm.title}</p>
-            <p>De : <br>${dataFilm.directors}</p>
-            <p>Avec : <br>${dataFilm.actors}</p>
-        `;
-        divBestMovieImg.innerHTML = contentImg;
-        divBestMovieInfos.innerHTML = contentInfos;
-    })

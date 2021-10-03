@@ -19,8 +19,14 @@ header{
 #just_strem_it{
     margin-top: 10px;
 }
-h1, h2, h5{
+h1, h2{
     color: #990101;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    width: 100%;
+}
+h5{
+    color: #ffffff;
     font-family: 'Roboto', sans-serif;
     text-align: center;
     width: 100%;
@@ -92,6 +98,14 @@ button:hover{
 .left_arrows,
 .right_arrows{
     margin: 3px;
+}
+.left_arrows{
+    background: url('icons/left_arrow.png');
+    background-repeat: no-repeat;
+}
+.right_arrows{
+    background: url('icons/right_arrow.png');
+    background-repeat: no-repeat;
 }
 #modal{
     display: none;
