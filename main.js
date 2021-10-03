@@ -23,17 +23,20 @@ async function modalMaker(clickedId){
             let modal_content = `
             <div id="modal_content">
                 <span id="close">&times;</span>
-                <h3>${response.title}</h3>
-                <h4>Genres : ${response.genres}</h4>
-                <h4>Année de sortie : ${response.year}</h4>
-                <h4>Score du publique : ${response.votes}</h4>
-                <h4>Score imdb : ${response.imdb_score}</h4>
-                <h4>Réalisateur : ${response.directors}</h4>
-                <h4>Acteurs : ${response.actors}</h4>
-                <h4>Durée : ${response.duration}min</h4>
-                <h4>Pays d'origine : ${response.countries}</h4>
-                <h4>Box office : ${response.usa_gross_income}$</h4>
-                <h4>Résumé : ${response.description}</h4>
+                <img src="${response.image_url}" id="modal_pic">
+                <div id="modal_infos">
+                    <h3>${response.title}</h3>
+                    <h4>Genres : ${response.genres}</h4>
+                    <h4>Année de sortie : ${response.year}</h4>
+                    <h4>Score du publique : ${response.votes}</h4>
+                    <h4>Score ImDB : ${response.imdb_score}</h4>
+                    <h4>Réalisateur : ${response.directors}</h4>
+                    <h4>Acteurs : ${response.actors}</h4>
+                    <h4>Durée : ${response.duration}min</h4>
+                    <h4>Pays d'origine : ${response.countries}</h4>
+                    <h4>Box office : ${response.usa_gross_income}$</h4>
+                    <h4>Résumé : ${response.description}</h4>
+                </div>
             </div>
             `;
             modal.innerHTML = modal_content;
@@ -45,7 +48,7 @@ async function modalMaker(clickedId){
             }
             window.onclick = function(event){
                 if (event.target == modal) {
-                    modal.display = "none";
+                    modal.style.display = "none";
                 }
             }
         })

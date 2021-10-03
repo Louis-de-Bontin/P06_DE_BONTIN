@@ -26,10 +26,12 @@ h1, h2{
     width: 100%;
 }
 h5{
-    color: #ffffff;
-    font-family: 'Roboto', sans-serif;
     text-align: center;
     width: 100%;
+}
+h3, h4, h5{
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
 }
 p{
     font-family: 'Roboto', sans-serif;
@@ -56,7 +58,7 @@ p{
     padding-right: 5%;
 }
 button{
-    background-repeat: center, no-repeat;
+    background-repeat: no-repeat;
     width: 4%;
     height: 50px;
     border: none;
@@ -79,7 +81,6 @@ button:hover{
 .carousel_images{
     display: flex;
     align-items: center;
-    /* justify-content: center; */
 }
 .carousel_square{
     width: 24%;
@@ -120,11 +121,12 @@ button:hover{
     background-color: rgba(0,0,0,0.4);
 }
 #modal_content{
-    background-color: grey;
+    background-color: rgba(44, 44, 44, 0.808);
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
+    border-radius: 50px;
 }
 #close{
     color: #aaa;
@@ -133,7 +135,9 @@ button:hover{
     font-weight: bold;
     cursor: pointer;
 }
-
+#modal_pic{
+    float: right;
+}
 #close:hover,
 #close:focus{
     color: black;
