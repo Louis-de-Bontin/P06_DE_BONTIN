@@ -5,10 +5,10 @@ let linkBestThriller = "http://localhost:8000/api/v1/titles/?year=&min_year=&max
 let linkBestHistory = "http://localhost:8000/api/v1/titles/?year=&min_year=&max_year=&imdb_score=&imdb_score_min=&imdb_score_max=&title=&title_contains=&genre=history&genre_contains=&sort_by=-imdb_score&director=&director_contains=&writer=&writer_contains=&actor=&actor_contains=&country=&country_contains=&lang=&lang_contains=&company=&company_contains=&rating=&rating_contains=&page=";
 let linkBestScifi = "http://localhost:8000/api/v1/titles/?year=&min_year=&max_year=&imdb_score=&imdb_score_min=&imdb_score_max=&title=&title_contains=&genre=sci-fi&genre_contains=&sort_by=-imdb_score&director=&director_contains=&writer=&writer_contains=&actor=&actor_contains=&country=&country_contains=&lang=&lang_contains=&company=&company_contains=&rating=&rating_contains=&page=";
 
-let bestMoviesInfo = [linkBestMovies, "group_best"];
-let bestThrillerInfo = [linkBestThriller, "group_thriller"];
-let bestHistoryInfo = [linkBestHistory, "group_history"];
-let bestScifiInfo = [linkBestScifi, "group_scifi"];
+let bestMoviesInfo = [linkBestMovies, "group_best", [0, 1, 2, 3]];
+let bestThrillerInfo = [linkBestThriller, "group_thriller", [0, 1, 2, 3]];
+let bestHistoryInfo = [linkBestHistory, "group_history", [0, 1, 2, 3]];
+let bestScifiInfo = [linkBestScifi, "group_scifi", [0, 1, 2, 3]];
 
 let moviesInfos = [bestMoviesInfo, bestThrillerInfo, bestHistoryInfo, bestScifiInfo];
 
@@ -139,12 +139,13 @@ function show_movies (moviesContainerid, movies_to_show) {
 // Cette fonction modifie les films à afficher grâce à de nouveaux index calculés soit dans la
 // fonction carouselTurnLeft soit dans la fonction carouselTurnRight. Puis appel la fonction
 // show_movies
-function turnCarousel(newIndex, sevenMovies, carouselId){
+function turnCarousel(infos, sevenMovies, carouselId){
+    console.log(infos[2]);
     let moviesToShow = [
-        sevenMovies[newIndex[0]],
-        sevenMovies[newIndex[1]],
-        sevenMovies[newIndex[2]],
-        sevenMovies[newIndex[3]],
+        sevenMovies[infos[2][0]],
+        sevenMovies[infos[2][1]],
+        sevenMovies[infos[2][2]],
+        sevenMovies[infos[2][3]],
     ]
     let moviesContainerId = "film_container_" + carouselId;
     show_movies(moviesContainerId, moviesToShow)
@@ -154,19 +155,18 @@ function turnCarousel(newIndex, sevenMovies, carouselId){
 // de 7 films. Cette fonction crée l'évennement du carousel lors du clique sur la flèche de gauche
 // turnCarousel est ensuite appelée avec les nouveaux index, l'array avec tous les films, et l'id
 // du carousel sur lequelle elle travaille.
-function carouselTurnLeft(leftArrowId, sevenMovies, carouselId){
-    let newIndex = [0, 1, 2, 3];
+function carouselTurnLeft(leftArrowId, sevenMovies, carouselId, infos){
     let clickableLeftArrow = document.getElementById(leftArrowId);
     clickableLeftArrow.addEventListener("click", function(){
         let i = 0;
         while (i<4){
-            newIndex[i] -= 1;
-            if (newIndex[i] < 0){
-                newIndex[i] = 6;
+            infos[2][i] -= 1;
+            if (infos[2][i] < 0){
+                infos[2][i] = 6;
             }
             i++;
         }
-        turnCarousel(newIndex, sevenMovies, carouselId);
+        turnCarousel(infos, sevenMovies, carouselId);
     })
 }
 
@@ -174,19 +174,18 @@ function carouselTurnLeft(leftArrowId, sevenMovies, carouselId){
 // de 7 films. Cette fonction crée l'évennement du carousel lors du clique sur la flèche de droite
 // turnCarousel est ensuite appelée avec les nouveaux index, l'array avec tous les films, et l'id
 // du carousel sur lequelle elle travaille.
-function carouselTurnRight(rightArrow, sevenMovies, carouselId){
-    let newIndex = [0, 1, 2, 3];
+function carouselTurnRight(rightArrow, sevenMovies, carouselId, infos){
     let clickableRightArrow = document.getElementById(rightArrow);
     clickableRightArrow.addEventListener("click", function(){
         let i = 0;
         while(i<4){
-            newIndex[i] += 1;
-            if (newIndex[i] > 6){
-                newIndex[i] = 0;
+            infos[2][i] += 1;
+            if (infos[2][i] > 6){
+                infos[2][i] = 0;
             }
             i++;
         }
-        turnCarousel(newIndex, sevenMovies, carouselId);
+        turnCarousel(infos, sevenMovies, carouselId);
     })
 }
 
@@ -210,7 +209,7 @@ async function display_carousel(infos) {
             show_movies(moviesContainerId, movies_to_show);
             // Le 4eme élément retourné est la liste d'index correspondant aux films à montrer
             // dans la liste de tous les films
-            return [movies, movies_to_show, infos[1], [0, 1, 2, 3]]
+            return [movies, movies_to_show, infos[1], infos]
         })
         // Après avoir affiché les films et les flèches, on crée les évènements qui déclanchent le
         // carousel
@@ -218,8 +217,8 @@ async function display_carousel(infos) {
             let carouselId = data[2];
             let leftArrow = "left_" + data[2];
             let rightArrow = "right_" + data[2];
-            carouselTurnLeft(leftArrow, movies, carouselId);
-            carouselTurnRight(rightArrow, movies, carouselId);
+            carouselTurnLeft(leftArrow, movies, carouselId, infos);
+            carouselTurnRight(rightArrow, movies, carouselId, infos);
         })
 }
 
